@@ -1,0 +1,2134 @@
+set PREVIEW_MODE "V:/splash.pcx"
+#Nintendo 3DS Definitive Kit
+#Hecho por @_YV4N_
+#Última Edición: 10/01/2018
+set ERRORMSG "No has elegido nada"
+
+goto 3DS
+
+#Menu principal de Nintendo 3DS Definitive Kit
+
+@CH_[0:]_Continuar_Cargando_Luma3DS
+boot 0:/3ds/3DSKIT/Clean&Update/boot.firm
+
+@CH_[1:]_Seleccionar_Payload
+goto payloads
+
+@CH_[2:]_Seleccionar_Script
+goto hack
+
+@CH_[3:]_Administrar_Cartucho_Actual
+goto dumpear
+
+@CH_[4:]_Crear/Restaurar_SysNAND
+goto imagen
+
+@CH_[5:]_Explorador_de_archivos
+goto explorer
+
+@CH_[6:]_Jugar_En_Modo_Kecleon
+goto kecleon
+
+@CH_[7:]_Otras_Opciones...
+goto other
+
+@CH_[8:]_Apagar/Reiniciar
+goto opw
+
+@CH_..............................
+goto 3DS
+
+@CH_[+]_Administrar_la_SD/MicroSD
+set PREVIEW_MODE "V:/sd.pcx"
+switchsd -o -s "Permiso de cambio opcional de SD\n \nInserta una SD para continuar.\nO pulsa (B) si te has equivocado."
+set PREVIEW_MODE "V:/splash.pcx"
+goto 3DS
+
+@CH_[+]_Creditos
+goto credit
+
+@3DS
+labelsel -o "     Bienvenido a Nintendo 3DS Kit!\n \n \nSeleccione una opcion de las siguientes:" CH_*
+
+goto 3DS
+
+
+#Jugar en Modo Kecleon_ Modo que no registra nada en Registro de Actividad
+
+@iki_[1:]_Activar_Modo_Kecleon
+cp -w -n -h 1:/data/$[SYSID0]/sysdata/00010022/00000000 1:/activitylog.bin
+reboot
+
+@iki_[2:]_Desactivar_Modo_Kecleon
+cp -w -n -h 1:/activitylog.bin 1:/data/$[SYSID0]/sysdata/00010022/00000000
+goto 3DS
+
+@kecleon
+labelsel "Has seleccionado Modo Kecleon\nEsto no almacena datos en Registro de Actividad\n \nUna vez dejes de jugar,\nescoge Desactivar Modo Kecleon" iki_*
+
+goto 3DS
+
+
+#Creditos con los principales colaboradores en el crecimiento del script
+@credit
+set PREVIEW_MODE "Nintendo 3DS Definitive Kit\nScript de GodMode9 hecho por @_YV4N_\n \nAgradecimientos especiales a @Hirobyte @01jara123\npor ayudas, sugerencias,...\n \n© Scene Nintendo 3DS 2017-2018"
+echo "Gracias por el soporte"
+set PREVIEW_MODE "V:/splash.pcx"
+goto 3DS
+
+
+#Otras opciones utiles para nuestra Nintendo 3DS
+@other
+goto NEE
+
+@GJ_............................................
+goto NEE
+
+@GJ_[1:]_Modificar_FIRM0
+goto masop
+
+@GJ_............................................
+goto NEE
+
+@GJ_[2:]_Dumpear/Restaurar_LCFS
+goto LFCSB
+
+@BB_............................................
+goto LFCSB
+
+@BB__________Dumpear_LFCS_B
+set OUTPATH $[GM9OUT]/$[SERIAL]_LocalFriendCodeSeed_B
+cp -w 1:/rw/sys/LocalFriendCodeSeed_B $[OUTPATH]
+echo "Local Friend Code Seed B dumpeado"
+goto 3DS
+
+@BB_............................................
+goto LFCSB
+
+@BB_________Restaurar_LFCS_b
+set OUTPATH 1:/rw/sys/LocalFriendCodeSeed_B
+find $[GM9OUT]/*LocalFriendCodeSeed_B COPYPATH
+cp -w $[COPYPATH] $[OUTPATH]
+echo "Local Friend Code Seed B restaurado"
+goto 3DS
+
+@BB_............................................
+goto LFCSB
+
+
+@LFCSB
+labelsel -o "     Que hacer con tu LocalFCS_B?" BB_*
+
+
+@GJ_............................................
+goto NEE
+
+@GJ_[3:]_Administrar_Friend_Save
+goto FSV
+
+
+@SVV_____.......................................
+goto FSV
+
+@SVV__________Dumpear_Friend_Save
+findnot $[GM9OUT]/friendsave_??? OUTPATH
+cp 1:/data/$[SYSID0]/sysdata/00010032/00000000 $[OUTPATH]
+echo "Friend Save dumpeado con exito"
+goto 3DS
+
+@SVV_____.......................................
+goto FSV
+
+@SVV_________Restaurar_Friend_Save
+set OUTPATH 1:/data/$[SYSID0]/sysdata/00010032/00000000
+set NUM "000"
+input "Que backup restaurar?" NUM
+find $[GM9OUT]/friendsave_$[NUM] COPYPATH
+cp -w $[COPYPATH] $[OUTPATH]
+echo "Friend save restaurado con exito
+goto 3DS"
+
+@SVV_____.......................................
+goto FSV
+
+
+@FSV
+labelsel -o "     Que hacer con tu Friend_Save?" SVV_*
+
+
+@GJ_............................................
+goto NEE
+
+@GJ_[4:]_Gestionar_Saves_GBA
+goto GBASV
+
+@BRGBA_____......................................
+goto GBASV
+
+
+@BRGBA__Dumpear_GBA_Save
+set OUTPATH 0:/gm9/out/gbavc.sav
+findnot $[GM9OUT]/gbavc_???.sav OUTPATH
+cp -w S:/gbavc.sav $[OUTPATH]
+goto 3DS
+
+@BRGBA_____......................................
+goto GBASV
+
+@BRGBA_Restaurar_GBA_Save
+set OUTPATH S:/gbavc.sav
+cp -w $[GM9OUT]/gbavc.sav $[OUTPATH]
+goto 3DS
+
+@BRGBA_____......................................
+goto GBASV
+
+@GBASV
+labelsel -o "Que quieres hacer?" BRGBA_*
+
+@GJ_............................................
+goto NEE
+
+@GJ_[5:]_Dumpear_titulo_CTRNAND
+ask "Dump titulo instalado a .CIA?"
+set NUM1 "00040000"
+set NUM2 "00000000"
+input "Que tipo de titulo quieres dumpear?\n(Dependiendo del titulo...)\n(00040000 = para juego)\n(0004000E = para actualizacion)\n(0004008C = para DLC)" NUM1
+input "Introduce los 8 digitos.\n(Esto identificara si es Juego/Actualizacion/DLC)" NUM2
+find A:/title/$[NUM1]/$[NUM2]/content/*.tmd TITLEPATH
+buildcia $[TITLEPATH]
+find $[GM9OUT]/$[NUM1]$[NUM2]* CIAPATH
+echo "Title dumpeado con exito:\n$[CIAPATH]"
+
+@GJ_............................................
+goto NEE
+
+@GJ_[6:]_Inyectar_DsiWareHax_Sudoku
+goto dsiware
+
+
+
+@NEE
+labelsel -o  "      Selecciona otras opciones:" GJ_*
+
+goto 3DS
+
+
+#Opciones de modificacion del FIRM0 de nuestra 3DS
+
+@otra_............................................
+goto masop
+
+
+@otra_____Desinstalar_Modificacion
+echo "Has seleccionado borrar B9S"
+goto desinstalar
+
+@otra_............................................
+goto masop
+
+
+@otra______Instalar_GodMode9_Firm
+echo "Vas a reemplazar Boot9Strap por FastBoot3DS"
+goto gm9f
+
+@otra_............................................
+goto masop
+
+
+
+@otra_____Instalar_FastBoot3DS_Firm
+echo "Vas a reemplazar Boot9Strap por FastBoot3DS"
+goto fb3dsf
+
+@otra_............................................
+goto masop
+
+@otra_____Instalar_Boot9Strap_Firm
+echo "Vas a reemplazar Boot9Strap por GodMode9"
+goto b9sf
+
+@otra_............................................
+goto masop
+
+
+@otra_______Instalar_ESTE_SCRIPT
+echo "Vas a instalar este script como arranque"
+goto 3DK
+
+@otra_............................................
+goto masop
+
+
+@masop
+labelsel -o "Selecciona otra opcion que te interese:" otra_*
+
+goto 3DS
+
+
+@RETR_Interfaz_con_imagen
+cp -w -n 0:/3ds/3DSKIT/ESTE.firm S:/firm0.bin
+goto 3DS
+
+@RETR_Interfaz_Decrypt9
+cp -w -n 0:/3ds/3DSKIT/ESTE_RETRO.firm S:/firm0.bin
+goto 3DS
+
+@3DK
+labelsel -o "Que version quieres instalar?" RETR_*
+goto 3DS
+
+
+#Payloads de distintas aplicaciones imprescindibles en nuestra consola
+@payloads
+
+goto pay
+
+@PL_............................................
+goto pay
+
+@PL____________Decrypt9WIP
+boot V:/DECRYPT9WIP.firm
+
+@PL_............................................
+goto pay
+
+@PL_____________GodMode9
+boot V:/GodMode9.firm
+
+
+@PL_............................................
+goto pay
+
+@PL__________NtrBoot-Flasher
+boot V:/ntrboot_flasher.firm
+
+
+@PL_............................................
+goto pay
+
+@PL_________OpenFirmInstaller
+boot V:/OpenFirmInstaller.firm
+
+@PL_............................................
+goto pay
+
+@pay
+labelsel -o "  Elige un payload de los siguientes\n \nSe iniciara automaticamente en tu 3DS" PL_*
+
+goto 3DS
+
+
+#Distintos scripts que sacan el maximo jugo a tu SD
+@hack
+goto hax
+
+@SC_......................................
+goto hax
+
+@SC___________Clean&Update
+goto Clean&Update
+
+@SC_......................................
+goto hax
+
+@SC____________UNBRICKED
+goto desbrickear
+
+@SC_......................................
+goto hax
+
+@SC_________Cambiar_De_Region
+goto regionch
+
+@SC_......................................
+goto hax
+
+@SC____________Limpiar_SD
+goto limpiar
+
+@SC_......................................
+goto hax
+
+@SC____Modo_Oculto_Torneos_Pokemon
+goto oculto
+
+
+@SC_......................................
+goto hax
+
+@hax
+labelsel -o "  Elige un script de los siguientes" SC_*
+
+goto 3DS
+
+
+#Opciones de apagado y reinicio de nuestra Nintendo 3DS
+goto opw
+
+@ip_.....................................
+goto opw
+
+@ip_______Apagar_Nintendo_3DS
+poweroff
+
+@ip_......................................
+goto opw
+
+@ip______Reiniciar_Nintendo_3DS
+reboot
+
+@ip_......................................
+goto opw
+
+
+@opw
+labelsel -o "         Que quieres hacer?" ip_*
+
+goto 3DS
+
+
+
+#Administra archivos y carpetas desde el script
+@explorer
+
+goto EXPLORADOR
+
+@ruta_[0:]_SDCARD
+goto SDCARD
+
+@CAE_Seleccionar_carpeta
+dirsel "elige" 0: SELDIR
+goto IPTION
+@CAE_Seleccionar_archivo
+filesel "Que quieres hacer?" 0:/*.* SELFILE
+goto OPTION
+
+@SDCARD
+labelsel "oio" CAE_*
+
+
+@ruta_[1:]_SYSNAND_CTRNAND
+goto CTRNAND
+
+@AMIO_Seleccionar_carpeta
+dirsel "elige" 1: SELDIR
+goto IPTION
+@AMIO_Seleccionar_archivo
+filesel "gfe" 1:/*.* SELFILE
+goto OPTION
+
+@CTRNAND
+labelsel "Que quieres hacer?" AMIO_*
+
+@ruta_[2:]_SYSNAND_TWL
+goto TWL
+
+@AMIO_Seleccionar_carpeta
+dirsel "elige" 2: SELDIR
+goto IPTION
+@AMIO_Seleccionar_archivo
+filesel "gfe" 2:/*.* SELFILE
+goto OPTION
+
+@CTRNAND
+labelsel "Que quieres hacer?" AMIO_*
+
+@TWL
+
+
+@ruta_[3:]_SYSNAND_TWLP
+goto TWLP
+@TWLP
+filesel "Selecciona lo que quieras" 3:/*.* SELFILE
+goto OPTION
+
+@ruta_[A:]_SYSNAND_SD
+goto SD
+@SD
+filesel "Selecciona lo que quieras" A:/*.* SELFILE
+goto OPTION
+
+@ruta_[S:]_SYSNAND_VIRTUAL
+goto VIRTUAL
+@VIRTUAL
+filesel "Selecciona lo que quieras" S:/*.* SELFILE
+goto OPTION
+
+@ruta_[8:]_SYSNAND_BONUS_DRIVE
+goto DRIVE
+@DRIVE
+filesel "Selecciona lo que quieras" 8:/*.* SELFILE
+goto OPTION
+
+@ruta_[9:]_RAMDRIVE
+goto RAMDRIVE
+@RAMDRIVE
+filesel "Selecciona lo que quieras" 9:/*.* SELFILE
+goto OPTION
+
+@ruta_[C:]_GAMECART
+goto GAMECART
+@GAMECART
+filesel "Selecciona lo que quieras" C:/*.* SELFILE
+goto OPTION
+
+@ruta_[M:]_MEMORY_VIRTUAL
+goto MEMORY
+@MEMORY
+filesel "Selecciona lo que quieras" M:/*.* SELFILE
+goto OPTION
+
+@ruta_[V:]_VRAM_DRIVE
+goto VRAM
+@VRAM
+filesel "Selecciona lo que quieras" V:/*.* SELFILE
+goto OPTION
+
+@ruta_[X:]_NAND_XORPADS
+goto XORPADS
+@XORPADS
+filesel "Selecciona lo que quieras" X:/*.* SELFILE
+goto OPTION
+
+@EXPLORADOR
+labelsel -o -s "Selecciona una ruta" ruta_*
+
+goto 3DS
+
+goto IPTION
+
+@ipt_Mover_Carpeta_A
+goto mvi
+
+@MA_[0:]_SDCARD
+mv $[SELDIR] 0:
+goto EXPLORADOR
+
+@MA_[1:]_SYSNAND_CTRNAND
+mv $[SELDIR] 1: SELDIR
+goto EXPLORADOR
+
+@mvi
+labelsel -o "Donde quieres moverlo?" MA_*
+
+
+@ipt_Eliminar_carpeta
+rm $[SELDIR]
+goto EXPLORADOR
+
+@IPTION
+labelsel -o -s "Que quieres hacer?" ipt_*
+goto chooser
+
+
+goto OPTION
+
+@opt_Mover_Archivo_A
+goto mvv
+
+@MA_[0:]_SDCARD
+mv $[SELFILE] 0:/$[SELFILE]
+goto EXPLORADOR
+
+@MA_[1:]_SYSNAND_CTRNAND
+mv $[SELFILE] 1:/$[SELFILE]
+goto EXPLORADOR
+
+@mvv
+labelsel -o "Donde quieres moverlo?" MA_*
+
+
+@opt_Eliminar_Archivo
+rm $[SELFILE]
+goto EXPLORADOR
+
+@opt_Copiar_Archivo_A...
+goto COPY
+
+@CPP_[0:]_SDCARD
+cp -w -n $[SELFILE] 0:/$[SELFILE]
+goto EXPLORADOR
+
+@CPP_[1:]_SYSNAND_CTRNAND
+cp -w -n $[SELFILE] 1:/$[SELFILE]
+goto EXPLORADOR
+
+@COPY
+labelsel -o "Donde quieres copiarlo?" CPP_*
+goto EXPLORADOR
+
+@opt_Inyectar_Archivo_A...
+goto mvv
+
+@MO_[S:]_SYSNAND_VIRTUAL
+cp -w -n $[SELFILE] S:/firm0.bin
+goto EXPLORADOR
+
+@mvv
+labelsel -o "Donde quieres moverlo?" MO_*
+
+@opt_Iniciar_FIRM
+boot $[SELFILE]
+goto 3DS
+
+@OPTION
+labelsel -o -s "Que quieres hacer?" opt_*
+goto chooser
+
+goto 3DS
+
+
+#SCRIPT CLEAN&UPDATE
+#"Clean&Update_Script" @2018
+@Clean&Update
+
+
+#Este es un sript que te permite instalar/actualizar Boot9Strap, limpiar tu SD de archivos inservibles y actualizar los archivos de tu SD.
+#Ultima modificacion: 10_01_2018
+#Autor: @ivanillofan
+
+echo "Bienvenido a Clean&Update Script!\n \nUn script de GodMode9 hecho por @_YV4N_\n \nLimpiador, actualizador e instalador, 3 en 1!\nUna potente herramienta para modificaciones de 3DS\nDescubre todo lo que puede hacer tu SD\n \nNo me hago responsable del uso inadecuado del script,\nsi lo utilizas es bajo tu responsabilidad.\nTU eres el responsable de cualquier dano material"
+
+echo  "ADVERTENCIA DE USO\nUsar MicroSD's Kingston es peligroso\n \nEstas SD's pueden corromper tu Nintendo 3DS o tu SD\nRecomiendo usar SD's de buena calidad.\n \nNo me hago responsable de ningun dano material,\nsi utilizas esas tarjetas es bajo tu responsabilidad."
+
+set ERRORMSG "No se pudieron copiar los archivos\nOperacion abortada o RAMDRIVE corrupta."
+echo  "[PASO 1]\nCopiado de archivos de la SD a la RAM\n \nSe van a extraer los archivos de actualizacion,\nse trata de un copiado temporal y totalmente seguro\n \nSe borrara todo una vez finalice el script."
+
+#Copiando pack de archivos de actualización a la RAMDRIVE 
+cp -w -n 0:/3ds/3DSKIT 9:/3DSKIT
+
+#Permiso para cambiar de SD o seguir con la misma (se puede saltar)
+set PREVIEW_MODE "V:/sd.pcx"
+switchsd -o -s "Permiso de cambio opcional de SD\n \nSi quieres actualizar tu SD, pulsa (B).\nSi quieres actualizar otra, introduce la de destino."
+set PREVIEW_MODE "V:/splash.pcx"
+
+echo  "[PASO 2]\nHabilitar permisos de escritura\n \nDebes autorizar escribir internamente en tu consola.\nNo se pediran mas permisos."
+
+#Concediendo permisos de escritura en tu Nintendo 3DS.
+set ERRORMSG "No se pudieron dar los permisos.\nOperacion abortada o 3DS sin CTRNAND.\n \nVa a ser expulsado del script."
+allow -a 1:/
+allow -a S:/
+
+set ERRORMSG "Fallo al borrar archivos.\nLa SD esta corrupta.\n \nFormateala en FAT32 en tu PC."
+echo "[PASO 3]\nLimpieza de archivos en la SD\n \nSe van a borrar todos los archivos innecesarios.\nEsto incluye archivos obsoletos u restos.\nNo se borraran ni temas ni splashes ni saves."
+
+rm -o -s 1:/arm9loaderhax.bin
+rm -o -s 0:/ReiNand.dat
+rm -o -s 0:/rei
+rm -o -s 0:/AuReiNand.dat
+rm -o -s 0:/aurei
+rm -o -s 0:/README.md
+rm -o -s 0:/Tools
+rm -o -s 0:/SoundHax
+rm -o -s 0:/DsiWareHax
+rm -o -s 0:/savedata
+rm -o -s 0:/SafeB9SInstaller.dat
+rm -o -s 0:/juego.app
+rm -o -s 0:/safehaxpayload.bin
+rm -o -s 0:/twlnslot
+rm -o -s 0:/twln
+rm -o -s 0:/3ds/safehax
+rm -o -s 0:/3ds/safehax2
+rm -o -s 0:/3ds/sysUpdater
+rm -o -s 0:/gm9out
+rm -o -s 0:/3ds/udsploit
+rm -o -s 0:/Tools
+rm -o -s 0:/rxTools
+rm -o -s 0:/ninjhax
+rm -o -s 0:/mset
+rm -o -s 0:/updates
+rm -o -s 0:/ykr_ReiNand
+rm -o -s 0:/arm9loaderhax.bin
+rm -o -s 1:/rw/luma
+rm -o -s 1:/boot.firm
+rm -o -s 0:/boot.firm
+rm -o -s 0:/boot.3dsx
+rm -o -s 0:/3ds/Anemone3DS
+rm -o -s 0:/3ds/data/freeShop
+rm -o -s 0:/3ds/FBI
+rm -o -s 0:/3ds/freeShop
+rm -o -s 0:/3ds/JKSM
+rm -o -s 0:/3ds/mgba
+rm -o -s 0:/3ds/MHGSV
+rm -o -s 0:/3ds/PKSM
+rm -o -s 0:/3ds/Themely
+rm -o -s 0:/3ds/CtrBootManager
+rm -o -s 0:/3ds/CtrBootManager.3dsx
+rm -o -s 0:/3ds/CtrBootManager9.bin
+rm -o -s 0:/3ds/Thenaya
+rm -o -s 0:/3ds/Anemone3DS.3dsx
+rm -o -s 0:/Anemone3DS.3dsx
+rm -o -s 0:/3ds/Anemone3DS.smdh
+rm -o -s 0:/Anemone3DS.smdh
+rm -o -s 0:/3ds/Checkpoint.3dsx
+rm -o -s 0:/3ds/FBI.3dsx
+rm -o -s 0:/FBI.3dsx
+rm -o -s 0:/FBI
+rm -o -s 0:/3ds/freeshop.3dsx
+rm -o -s 0:/freeshop.3dsx
+rm -o -s 0:/3ds/freeshop.smdh
+rm -o -s 0:/freeshop.smdh
+rm -o -s 0:/3ds/GameYob.3dsx
+rm -o -s 0:/3ds/JKSM.3dsx
+rm -o -s 0:/JKSM.3dsx
+rm -o -s 0:/3ds/mgba.3dsx
+rm -o -s 0:/mgba.3dsx
+rm -o -s 0:/3ds/mgba.smdh
+rm -o -s 0:/mgba.smdh
+rm -o -s 0:/3ds/MHGSV.3dsx
+rm -o -s 0:/MHGSV.3dsx
+rm -o -s 0:/3ds/PKSM.3dsx
+rm -o -s 0:/PKSM.3dsx
+rm -o -s 0:/PKSM.xml
+rm -o -s 0:/3ds/PKSM.xml
+rm -o -s 0:/3ds/Themely.3dsx
+rm -o -s 0:/Themely.3dsx
+rm -o -s 0:/3ds/Thenaya.3dsx
+rm -o -s 0:/3ds/Thenaya.smdh
+rm -o -s 0:/3ds/CHMM2
+rm -o -s 0:/3ds/CHMM2.3dsx
+rm -o -s 0:/3ds/CHMM2.smdh
+rm -o -s 0:/3ds/CHMM2.xml
+rm -o -s 0:/CHMM2.3dsx
+rm -o -s 0:/CHMM2.smdh
+rm -o -s 0:/CHMM2.xml
+rm -o -s 0:/3ds/menuhax
+rm -o -s 0:/3ds/menuhax_manager
+rm -o -s 0:/3ds/menuhax_manager.3dsx
+rm -o -s 0:/3ds/menuhax_manager.xml
+rm -o -s 0:/3ds/ftbrony
+rm -o -s 0:/3ds/ftbrony.3dsx
+rm -o -s 0:/3ds/ftbrony.smdh
+rm -o -s 0:/3ds/ftbrony.xml
+rm -o -s 0:/ftbrony.3dsx
+rm -o -s 0:/ftbrony.smdh
+rm -o -s 0:/ftbrony.xml
+rm -o -s 0:/3ds/hans
+rm -o -s 0:/3ds/hans.3dsx
+rm -o -s 0:/3ds/hans.smdh
+rm -o -s 0:/3ds/hans.xml
+rm -o -s 0:/hans.3dsx
+rm -o -s 0:/hans.smdh
+rm -o -s 0:/hans.xml
+rm -o -s 0:/3ds/qtm
+rm -o -s 0:/3ds/qtm.3dsx
+rm -o -s 0:/3ds/qtm.smdh
+rm -o -s 0:/3ds/qtm.xml
+rm -o -s 0:/3ds/scrtool
+rm -o -s 0:/3ds/scrtool
+rm -o -s 0:/3ds/scrtool.3dsx
+rm -o -s 0:/3ds/scrtool.smdh
+rm -o -s 0:/3ds/eshop.smdh
+rm -o -s 0:/3ds/eshop.xml
+rm -o -s 0:/3ds/ironhax.smdh
+rm -o -s 0:/3ds/ironhax.xml
+rm -o -s 0:/3ds/sploit_installer_oot3dhax.smdh
+rm -o -s 0:/3ds/sploit_installer:oot3dhax.xml
+rm -o -s 0:/3ds/prboom
+rm -o -s 0:/3ds/prboom.3dsx
+rm -o -s 0:/3ds/prboom.wad
+rm -o -s 0:/3ds/sploit_installer_stickerhax.smdh
+rm -o -s 0:/3ds/sploit_installer_stickerhax.xml
+rm -o -s 0:/3ds/ftpd
+rm -o -s 0:/3ds/ftpd.3dsx
+rm -o -s 0:/3ds/ftpd.xml
+rm -o -s 0:/3ds/ctr-httpwn
+rm -o -s 0:/3ds/ctr-httpwn.3dsx
+rm -o -s 0:/3ds/ctr-httpwn.xml
+rm -o -s 0:/3ds/braindump
+rm -o -s 0:/3ds/braindump.3dsx
+rm -o -s 0:/3ds/braindump.xml
+rm -o -s 0:/3ds/lumaupdater
+rm -o -s 0:/3ds/lumaupdater.3dsx
+rm -o -s 0:/3ds/lumaupdater.log
+rm -o -s 0:/3ds/lumaupdater.smdh
+rm -o -s 0:/3ds/Luma3DS
+rm -o -s 0:/3ds/Luma3DS.3dsx
+rm -o -s 0:/3ds/Luma3DS.smdh
+rm -o -s 0:/3ds/AuReiNand
+rm -o -s 0:/3ds/AuReiNand.3dsx
+rm -o -s 0:/3ds/AuReiNand.smdh
+rm -o -s 0:/3ds/Cakes
+rm -o -s 0:/3ds/Cakes.3dsx
+rm -o -s 0:/3ds/Cakes.smdh
+rm -o -s 0:/a9lh
+rm -o -s 0:/ntrboot.firm
+rm -o -s 0:/splashes
+rm -o -s 0:/ntrboot
+rm -o -s 0:/files9
+rm -o -s 1:/ntrboot.firm
+rm -o -s 0:/arm9.bin
+rm -o -s 0:/arm11.bin
+rm -o -s 0:/yakara.g
+rm -o -s 0:/anim
+rm -o -s 0:/a9lh.cfg
+rm -o -s 0:/splash.bin
+rm -o -s 0:/boot_hb.3dsx
+rm -o -s 0:/hs.app
+rm -o -s 0:/FBI.cia
+rm -o -s 0:/freeshop.cia
+rm -o -s 0:/Anemone3DS.cia
+rm -o -s 0:/Themely.cia
+rm -o -s 0:/CHMM.cia
+rm -o -s 0:/JKSM.cia
+rm -o -s 0:/dspfirm.cdc
+rm -o -s 0:/slot0x05KeyY
+rm -o -s 0:/hs.enc
+rm -o -s 0:/webkithax_tmp.bin
+rm -o -s 0:/LAUNCHER.dat
+rm -o -s 0:/hs.app
+rm -o -s 0:/menuhax_padcfg.bin
+rm -o -s 0:/Decrypt9.log
+rm -o -s 0:/otp.bin
+rm -o -s 0:/a9f.bin
+rm -o -s 0:/NAND.bin
+rm -o -s 0:/EmuNAND.bin
+rm -o -s 0:/EmuNAND9.log
+rm -o -s 0:/EmuNAND9Tool.log
+rm -o -s 0:/RX_TOOLS.log
+rm -o -s 0:/ropbinpayload_menuhax_EUR12288_old3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_EUR12288_new3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_USA12288_old3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_USA12288_new3ds.bin
+rm -o -s 0:/arm9loaderhax.3dsx
+rm -o -s 0:/EmuNAND9Tool.bin
+rm -o -s 0:/Inyectar_FBI
+rm -o -s 0:/menuhax_imagedisplay.bin
+rm -o -s 0:/less.3dsx
+rm -o -s 0:/hblauncher_loader.cia
+rm -o -s 0:/JK_Save_Manager.cia
+rm -o -s 0:/TinyFormat.cia
+rm -o -s 0:/sysUpdater.cia
+rm -o -s 0:/PlaiSysUpdater.cia
+rm -o -s 0:/BootNTRSelector.cia
+rm -o -s 0:/PlaiSys.log
+rm -o -s 0:/CIAs
+rm -o -s 0:/CIA
+rm -o -s 0:/data
+rm -o -s 0:/INSTALADOR_SYSUPDATER
+rm -o -s 0:/LEEME.text
+rm -o -s 0:/otherapp.bin
+rm -o -s 0:/boot.nds
+rm -o -s 0:/juego.app
+rm -o -s 0:/GodMode9.dat
+rm -o -s 0:/public.sav
+rm -o -s 0:/freaky.bin
+rm -o -s 0:/Instalar_Plaisysupdater
+rm -o -s 0:/update
+rm -o -s 0:/cias/Aplicaciones
+rm -o -s 0:/update
+rm -o -s 0:/ntrboot.firm
+rm -o -s 0:/emunand
+rm -o -s 0:/sh
+rm -o -s 0:/3ds/GodMode9
+rm -o -s 0:/gm9
+
+
+set ERRORMSG "SD sin espacio para el copiado.\nOperacion abortada por script\n \nRevisa el espacio libre de tu SD"
+echo  "[PASO 4]\nCopiado archivos de actualizacion \n \nSe van a copiar los archivos necesarios en la SD.\nIncluye archivos necesarios para el arranque y uso.\nSobreescribira los que ya tuvieras de antes."
+
+cp -w -n -s 9:/3DSKIT/Clean&Update/boot9strap/boot9strap.firm 0:/boot9strap/boot9strap.firm
+cp -w -n -s 9:/3DSKIT/Clean&Update/boot9strap/boot9strap.firm.sha 0:/boot9strap/boot9strap.firm.sha
+cp -w -n -s 9:/3DSKIT/Clean&Update/splashes 0:/splashes
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/Anemone3DS.cia 0:/cias/Anemone3DS.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/BootNTR.cia 0:/cias/BootNTR.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/BootNTR-Mode3.cia 0:/cias/BootNTR-Mode3.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/FBI.cia 0:/cias/FBI.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/JKSM.cia 0:/cias/JKSM.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/freeshop.cia 0:/cias/freeShop.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/hblauncher_loader.cia 0:/cias/hblauncher_loader.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/Checkpoint.cia 0:/cias/Checkpoint.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/PKSM.cia 0:/cias/PKSM.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/cias/Themely.cia 0:/cias/Themely.cia
+cp -w -n -s 9:/3DSKIT/Clean&Update/stealth/boot.firm 1:/boot.firm
+cp -w -n -s 9:/3DSKIT/Clean&Update/Themes/SMO.zip 0:/Themes/SMO.zip
+cp -w -n -s 9:/3DSKIT/Clean&Update/Themes/TLOZ.zip 0:/Themes/TLOZ.zip
+cp -w -n -s 9:/3DSKIT/Clean&Update/boot.firm 0:/boot.firm
+cp -w -n -s 9:/3DSKIT/Clean&Update/luma 1:/rw/luma
+cp -w -n -s 9:/3DSKIT/Clean&Update/luma 0:/luma
+cp -w -n -s 9:/3DSKIT/Clean&Update/ofi 0:/ofi
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/Anemone3DS 0:/3ds/Anemone3DS
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/data 0:/3ds/data
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/FBI 0:/3ds/FBI
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/freeShop 0:/3ds/freeShop
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/GameYob 0:/3ds/GameYob
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/Checkpoint.3dsx 0:/3ds/Checkpoint.3dsx
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/mgba 0:/3ds/mgba
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/MHGSV 0:/3ds/MHGSV
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/PKSM 0:/3ds/PKSM
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/Themely 0:/3ds/Themely
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/Thenaya 0:/3ds/Thenaya
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/JKSM.3dsx 0:/3ds/JKSM.3dsx
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/snes9x_3ds.3dsx 0:/3ds/snes9x_3ds.3dsx
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/snes9x_3ds.cfg 0:/3ds/snes9x_3ds.cfg
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/snes9x_3ds.smdh 0:/3ds/snes9x_3ds.smdh
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/snes9x_3ds_top.png 0:/3ds/snes9x_3ds_top.png
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/virtuanes_3ds.3dsx 0:/3ds/virtuanes_3ds.3dsx
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/virtuanes_3ds.cfg 0:/3ds/virtuanes_3ds.cfg
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/virtuanes_3ds.smdh 0:/3ds/virtuanes_3ds.smdh
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/virtuanes_3ds_top.png 0:/3ds/virtuanes_3ds_top.png
+cp -w -n -s 9:/3DSKIT/Clean&Update/boot.3dsx 0:/boot.3dsx
+cp -w -n -s 9:/3DSKIT/Clean&Update/3ds/dspfirm.cdc 0:/3ds/dspfirm.cdc
+cp -w -n -s 9:/3DSKIT/Clean&Update/gm9 0:/gm9
+
+ 
+echo  "[PASO 5]\n \nInstalacion de Boot9Strap\n \nSe va a actualizar/instalar Boot9Strap en tu N3DS.\nEsto consiste en inyectarlo en el FIRM0/FIRM1.\n \nNo hay riesgo alguno, se sobreescribira si ya existia."
+
+#Verificando legitimidad de los firm de Boot9strap
+sha 9:/3DSKIT/Clean&Update/boot9strap/boot9strap.firm 79C68585B4BA1D7C4A91B858861553E768C6576B92E303810B33219736B3598B
+sha 9:/3DSKIT/Clean&Update/boot9strap/boot9strap.firm.sha 9D0A138BB4FA8292C7431C10471D8453D1D506F8A7B54FCD1E089727845F4F77
+
+#Creando backup de los FIRM's por seguridad
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm0.bin OUTPATH
+cp -w -h -n S:/firm0.bin $[OUTPATH]
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm1.bin OUTPATH
+cp -w -h -n S:/firm1.bin $[OUTPATH]
+
+#Borrando pack de archivos de actualización de la RAMDRIVE
+cp -w -n 9:/3DSKIT 0:/3ds/3DSKIT
+rm -o -s 9:/3DSKIT
+
+#Inyectando FIRM de B9S en el FIRM0
+find 0:/3ds/3DSKIT/Clean&Update/boot9strap/boot9strap.firm B4S
+cp -w -n $[B4S] S:/firm0.bin
+
+cp -w -n $[B4S] S:/firm1.bin
+
+qr "Instalacion finalizada.\nComprueba el estado de tu 3DS escaneando el QR\no leyendo la informacion de abajo\n \nTu numero de serial es $[SERIAL]\nTu ruta de backups es $[GM9OUT]\nTu exploit es $[HAX]\nTu consola es una $[RDTYPE] $[ONTYPE]\nLa hora de tu 3DS es $[TIMESTAMP]\nLa fecha de tu 3DS es $[DATESTAMP]\n" "Esta es la información actualizada de tu consola,que estás viendo desde tu dispositivo inteligente.\n \nActualmente, tu Nintendo 3DS o 2DS,\n si antes era virgen,debería contar con el exploit Boot9strap\n \nVerifícalo con la información de abajo\n \nTu numero de serial es $[SERIAL]\nTu ruta de backups es $[GM9OUT]\nTu exploit es $[HAX]\nTu consola es una $[RDTYPE] $[ONTYPE]\nLa hora de tu 3DS es $[TIMESTAMP]\nLa fecha de tu 3DS es $[DATESTAMP]"
+
+qr "Para dudas o soporte sobre tu Nintendo 3DS.\nEscanea el codigo QR superior con tu smartphone.\n \nTambien puedes visitar www.scenen3ds.com,\nahi encontraras cualquier duda sobre tu N3DS.\n \nSe va a reiniciar tu Nintendo 3DS al HOME.\nSi la consola no llega a reiniciarse,\nponte en contacto conmigo" http://www.scenen3ds.com/p/3ds.html
+ 
+goto 3DS
+
+
+@Apagar_Nintendo_3DS
+#Se encarga de apagar la consola
+poweroff
+
+@Reiniciar_Nintendo_3DS
+#Se encarga de reiniciar la consola
+reboot
+
+
+@limpiar
+#Se encarga de limpiar la SD
+set PREVIEW_MODE "V:/sd.pcx"
+switchsd -o -s "Permiso de cambio opcional de SD\n \nSi quieres limpiar tu SD, pulsa (B).\nSi quieres limpiar otra, introduce la de destino."
+set PREVIEW_MODE "V:/splash.pcx"
+allow -a 1:/
+
+goto limpieza
+
+
+@limp_......................................
+goto limpieza
+
+@limp________Limpieza_(SD_Stock)
+goto todo
+
+
+@limp_......................................
+goto limpieza
+
+@limp______Limpieza_(SD_Residuos)
+goto basura
+
+
+@limp_......................................
+goto limpieza
+
+@limpieza
+labelsel -o "        Seleccione una opcion:" limp_*
+
+goto 3DS
+
+@todo
+rm -o -s 0:/boot.firm
+rm -o -s 0:/3ds
+rm -o -s 0:/luma
+rm -o -s 0:/ReiNand.dat
+rm -o -s 0:/rei
+rm -o -s 0:/AuReiNand.dat
+rm -o -s 0:/aurei
+rm -o -s 0:/README.md
+rm -o -s 0:/Tools
+rm -o -s 0:/SoundHax
+rm -o -s 0:/DsiWareHax
+rm -o -s 0:/savedata
+rm -o -s 0:/SafeB9SInstaller.dat
+rm -o -s 0:/juego.app
+rm -o -s 0:/safehaxpayload.bin
+rm -o -s 0:/twlnslot
+rm -o -s 0:/twln
+rm -o -s 0:/3ds/safehax
+rm -o -s 0:/3ds/safehax2
+rm -o -s 0:/3ds/sysUpdater
+rm -o -s 0:/gm9out
+rm -o -s 0:/3ds/udsploit
+rm -o -s 0:/Tools
+rm -o -s 0:/rxTools
+rm -o -s 0:/ninjhax
+rm -o -s 0:/mset
+rm -o -s 0:/updates
+rm -o -s 0:/ykr_ReiNand
+rm -o -s 0:/arm9loaderhax.bin
+rm -o -s 0:/boot.firm
+rm -o -s 0:/boot.3dsx
+rm -o -s 0:/3ds/Anemone3DS
+rm -o -s 0:/3ds/data/freeShop
+rm -o -s 0:/3ds/FBI
+rm -o -s 0:/3ds/freeShop
+rm -o -s 0:/3ds/JKSM
+rm -o -s 0:/3ds/mgba
+rm -o -s 0:/3ds/MHGSV
+rm -o -s 0:/3ds/PKSM
+rm -o -s 0:/3ds/Themely
+rm -o -s 0:/3ds/CtrBootManager
+rm -o -s 0:/3ds/CtrBootManager.3dsx
+rm -o -s 0:/3ds/CtrBootManager9.bin
+rm -o -s 0:/3ds/Thenaya
+rm -o -s 0:/3ds/Anemone3DS.3dsx
+rm -o -s 0:/Anemone3DS.3dsx
+rm -o -s 0:/3ds/Anemone3DS.smdh
+rm -o -s 0:/Anemone3DS.smdh
+rm -o -s 0:/3ds/Checkpoint.3dsx
+rm -o -s 0:/3ds/FBI.3dsx
+rm -o -s 0:/FBI.3dsx
+rm -o -s 0:/FBI
+rm -o -s 0:/3ds/freeshop.3dsx
+rm -o -s 0:/freeshop.3dsx
+rm -o -s 0:/3ds/freeshop.smdh
+rm -o -s 0:/freeshop.smdh
+rm -o -s 0:/3ds/GameYob.3dsx
+rm -o -s 0:/3ds/JKSM.3dsx
+rm -o -s 0:/JKSM.3dsx
+rm -o -s 0:/3ds/mgba.3dsx
+rm -o -s 0:/mgba.3dsx
+rm -o -s 0:/3ds/mgba.smdh
+rm -o -s 0:/mgba.smdh
+rm -o -s 0:/3ds/MHGSV.3dsx
+rm -o -s 0:/MHGSV.3dsx
+rm -o -s 0:/3ds/PKSM.3dsx
+rm -o -s 0:/PKSM.3dsx
+rm -o -s 0:/PKSM.xml
+rm -o -s 0:/3ds/PKSM.xml
+rm -o -s 0:/3ds/Themely.3dsx
+rm -o -s 0:/Themely.3dsx
+rm -o -s 0:/3ds/Thenaya.3dsx
+rm -o -s 0:/3ds/Thenaya.smdh
+rm -o -s 0:/3ds/CHMM2
+rm -o -s 0:/3ds/CHMM2.3dsx
+rm -o -s 0:/3ds/CHMM2.smdh
+rm -o -s 0:/3ds/CHMM2.xml
+rm -o -s 0:/CHMM2.3dsx
+rm -o -s 0:/CHMM2.smdh
+rm -o -s 0:/CHMM2.xml
+rm -o -s 0:/3ds/menuhax
+rm -o -s 0:/3ds/menuhax_manager
+rm -o -s 0:/3ds/menuhax_manager.3dsx
+rm -o -s 0:/3ds/menuhax_manager.xml
+rm -o -s 0:/3ds/ftbrony
+rm -o -s 0:/3ds/ftbrony.3dsx
+rm -o -s 0:/3ds/ftbrony.smdh
+rm -o -s 0:/3ds/ftbrony.xml
+rm -o -s 0:/ftbrony.3dsx
+rm -o -s 0:/ftbrony.smdh
+rm -o -s 0:/ftbrony.xml
+rm -o -s 0:/3ds/hans
+rm -o -s 0:/3ds/hans.3dsx
+rm -o -s 0:/3ds/hans.smdh
+rm -o -s 0:/3ds/hans.xml
+rm -o -s 0:/hans.3dsx
+rm -o -s 0:/hans.smdh
+rm -o -s 0:/hans.xml
+rm -o -s 0:/3ds/qtm
+rm -o -s 0:/3ds/qtm.3dsx
+rm -o -s 0:/3ds/qtm.smdh
+rm -o -s 0:/3ds/qtm.xml
+rm -o -s 0:/3ds/scrtool
+rm -o -s 0:/3ds/scrtool
+rm -o -s 0:/3ds/scrtool.3dsx
+rm -o -s 0:/3ds/scrtool.smdh
+rm -o -s 0:/3ds/eshop.smdh
+rm -o -s 0:/3ds/eshop.xml
+rm -o -s 0:/3ds/ironhax.smdh
+rm -o -s 0:/3ds/ironhax.xml
+rm -o -s 0:/3ds/sploit_installer_oot3dhax.smdh
+rm -o -s 0:/3ds/sploit_installer:oot3dhax.xml
+rm -o -s 0:/3ds/prboom
+rm -o -s 0:/3ds/prboom.3dsx
+rm -o -s 0:/3ds/prboom.wad
+rm -o -s 0:/3ds/sploit_installer_stickerhax.smdh
+rm -o -s 0:/3ds/sploit_installer_stickerhax.xml
+rm -o -s 0:/3ds/ftpd
+rm -o -s 0:/3ds/ftpd.3dsx
+rm -o -s 0:/3ds/ftpd.xml
+rm -o -s 0:/3ds/ctr-httpwn
+rm -o -s 0:/3ds/ctr-httpwn.3dsx
+rm -o -s 0:/3ds/ctr-httpwn.xml
+rm -o -s 0:/3ds/braindump
+rm -o -s 0:/3ds/braindump.3dsx
+rm -o -s 0:/3ds/braindump.xml
+rm -o -s 0:/3ds/lumaupdater
+rm -o -s 0:/3ds/lumaupdater.3dsx
+rm -o -s 0:/3ds/lumaupdater.log
+rm -o -s 0:/3ds/lumaupdater.smdh
+rm -o -s 0:/3ds/Luma3DS
+rm -o -s 0:/3ds/Luma3DS.3dsx
+rm -o -s 0:/3ds/Luma3DS.smdh
+rm -o -s 0:/3ds/AuReiNand
+rm -o -s 0:/3ds/AuReiNand.3dsx
+rm -o -s 0:/3ds/AuReiNand.smdh
+rm -o -s 0:/3ds/Cakes
+rm -o -s 0:/3ds/Cakes.3dsx
+rm -o -s 0:/3ds/Cakes.smdh
+rm -o -s 0:/a9lh
+rm -o -s 0:/ntrboot.firm
+rm -o -s 0:/splashes
+rm -o -s 0:/ntrboot
+rm -o -s 0:/files9
+rm -o -s 0:/arm9.bin
+rm -o -s 0:/arm11.bin
+rm -o -s 0:/yakara.g
+rm -o -s 0:/anim
+rm -o -s 0:/a9lh.cfg
+rm -o -s 0:/splash.bin
+rm -o -s 0:/boot_hb.3dsx
+rm -o -s 0:/hs.app
+rm -o -s 0:/FBI.cia
+rm -o -s 0:/freeshop.cia
+rm -o -s 0:/Anemone3DS.cia
+rm -o -s 0:/Themely.cia
+rm -o -s 0:/CHMM.cia
+rm -o -s 0:/JKSM.cia
+rm -o -s 0:/dspfirm.cdc
+rm -o -s 0:/slot0x05KeyY
+rm -o -s 0:/hs.enc
+rm -o -s 0:/webkithax_tmp.bin
+rm -o -s 0:/LAUNCHER.dat
+rm -o -s 0:/hs.app
+rm -o -s 0:/menuhax_padcfg.bin
+rm -o -s 0:/Decrypt9.log
+rm -o -s 0:/otp.bin
+rm -o -s 0:/a9f.bin
+rm -o -s 0:/NAND.bin
+rm -o -s 0:/EmuNAND.bin
+rm -o -s 0:/EmuNAND9.log
+rm -o -s 0:/EmuNAND9Tool.log
+rm -o -s 0:/RX_TOOLS.log
+rm -o -s 0:/ropbinpayload_menuhax_EUR12288_old3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_EUR12288_new3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_USA12288_old3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_USA12288_new3ds.bin
+rm -o -s 0:/arm9loaderhax.3dsx
+rm -o -s 0:/EmuNAND9Tool.bin
+rm -o -s 0:/Inyectar_FBI
+rm -o -s 0:/menuhax_imagedisplay.bin
+rm -o -s 0:/less.3dsx
+rm -o -s 0:/hblauncher_loader.cia
+rm -o -s 0:/JK_Save_Manager.cia
+rm -o -s 0:/TinyFormat.cia
+rm -o -s 0:/sysUpdater.cia
+rm -o -s 0:/PlaiSysUpdater.cia
+rm -o -s 0:/BootNTRSelector.cia
+rm -o -s 0:/PlaiSys.log
+rm -o -s 0:/CIAs
+rm -o -s 0:/CIA
+rm -o -s 0:/data
+rm -o -s 0:/INSTALADOR_SYSUPDATER
+rm -o -s 0:/LEEME.text
+rm -o -s 0:/otherapp.bin
+rm -o -s 0:/boot.nds
+rm -o -s 0:/juego.app
+rm -o -s 0:/GodMode9.dat
+rm -o -s 0:/public.sav
+rm -o -s 0:/freaky.bin
+rm -o -s 0:/Instalar_Plaisysupdater
+rm -o -s 0:/update
+rm -o -s 0:/cias/Aplicaciones
+rm -o -s 0:/update
+rm -o -s 0:/ntrboot.firm
+rm -o -s 0:/emunand
+rm -o -s 0:/sh
+rm -o -s 0:/3ds/GodMode9
+rm -o -s 0:/gm9
+goto selector
+
+@basura
+rm -o -s 0:/ReiNand.dat
+rm -o -s 0:/rei
+rm -o -s 0:/AuReiNand.dat
+rm -o -s 0:/aurei
+rm -o -s 0:/README.md
+rm -o -s 0:/Tools
+rm -o -s 0:/SoundHax
+rm -o -s 0:/DsiWareHax
+rm -o -s 0:/savedata
+rm -o -s 0:/SafeB9SInstaller.dat
+rm -o -s 0:/juego.app
+rm -o -s 0:/safehaxpayload.bin
+rm -o -s 0:/twlnslot
+rm -o -s 0:/twln
+rm -o -s 0:/3ds/safehax
+rm -o -s 0:/3ds/safehax2
+rm -o -s 0:/3ds/sysUpdater
+rm -o -s 0:/gm9out
+rm -o -s 0:/3ds/udsploit
+rm -o -s 0:/Tools
+rm -o -s 0:/rxTools
+rm -o -s 0:/ninjhax
+rm -o -s 0:/mset
+rm -o -s 0:/updates
+rm -o -s 0:/ykr_ReiNand
+rm -o -s 0:/arm9loaderhax.bin
+rm -o -s 0:/3ds/CHMM2
+rm -o -s 0:/3ds/CHMM2.3dsx
+rm -o -s 0:/3ds/CHMM2.smdh
+rm -o -s 0:/3ds/CHMM2.xml
+rm -o -s 0:/CHMM2.3dsx
+rm -o -s 0:/CHMM2.smdh
+rm -o -s 0:/CHMM2.xml
+rm -o -s 0:/3ds/menuhax
+rm -o -s 0:/3ds/menuhax_manager
+rm -o -s 0:/3ds/menuhax_manager.3dsx
+rm -o -s 0:/3ds/menuhax_manager.xml
+rm -o -s 0:/3ds/ftbrony
+rm -o -s 0:/3ds/ftbrony.3dsx
+rm -o -s 0:/3ds/ftbrony.smdh
+rm -o -s 0:/3ds/ftbrony.xml
+rm -o -s 0:/ftbrony.3dsx
+rm -o -s 0:/ftbrony.smdh
+rm -o -s 0:/ftbrony.xml
+rm -o -s 0:/3ds/hans
+rm -o -s 0:/3ds/hans.3dsx
+rm -o -s 0:/3ds/hans.smdh
+rm -o -s 0:/3ds/hans.xml
+rm -o -s 0:/hans.3dsx
+rm -o -s 0:/hans.smdh
+rm -o -s 0:/hans.xml
+rm -o -s 0:/3ds/qtm
+rm -o -s 0:/3ds/qtm.3dsx
+rm -o -s 0:/3ds/qtm.smdh
+rm -o -s 0:/3ds/qtm.xml
+rm -o -s 0:/3ds/scrtool
+rm -o -s 0:/3ds/scrtool
+rm -o -s 0:/3ds/scrtool.3dsx
+rm -o -s 0:/3ds/scrtool.smdh
+rm -o -s 0:/3ds/eshop.smdh
+rm -o -s 0:/3ds/eshop.xml
+rm -o -s 0:/3ds/ironhax.smdh
+rm -o -s 0:/3ds/ironhax.xml
+rm -o -s 0:/3ds/sploit_installer_oot3dhax.smdh
+rm -o -s 0:/3ds/sploit_installer:oot3dhax.xml
+rm -o -s 0:/3ds/prboom
+rm -o -s 0:/3ds/prboom.3dsx
+rm -o -s 0:/3ds/prboom.wad
+rm -o -s 0:/3ds/sploit_installer_stickerhax.smdh
+rm -o -s 0:/3ds/sploit_installer_stickerhax.xml
+rm -o -s 0:/3ds/ftpd
+rm -o -s 0:/3ds/ftpd.3dsx
+rm -o -s 0:/3ds/ftpd.xml
+rm -o -s 0:/3ds/ctr-httpwn
+rm -o -s 0:/3ds/ctr-httpwn.3dsx
+rm -o -s 0:/3ds/ctr-httpwn.xml
+rm -o -s 0:/3ds/braindump
+rm -o -s 0:/3ds/braindump.3dsx
+rm -o -s 0:/3ds/braindump.xml
+rm -o -s 0:/3ds/lumaupdater
+rm -o -s 0:/3ds/lumaupdater.3dsx
+rm -o -s 0:/3ds/lumaupdater.log
+rm -o -s 0:/3ds/lumaupdater.smdh
+rm -o -s 0:/3ds/Luma3DS.3dsx
+rm -o -s 0:/3ds/Luma3DS.smdh
+rm -o -s 0:/3ds/AuReiNand
+rm -o -s 0:/3ds/AuReiNand.3dsx
+rm -o -s 0:/3ds/AuReiNand.smdh
+rm -o -s 0:/3ds/Cakes
+rm -o -s 0:/3ds/Cakes.3dsx
+rm -o -s 0:/3ds/Cakes.smdh
+rm -o -s 0:/a9lh
+rm -o -s 0:/splashes
+rm -o -s 0:/files9
+rm -o -s 0:/arm9.bin
+rm -o -s 0:/arm11.bin
+rm -o -s 0:/yakara.g
+rm -o -s 0:/anim
+rm -o -s 0:/a9lh.cfg
+rm -o -s 0:/splash.bin
+rm -o -s 0:/boot_hb.3dsx
+rm -o -s 0:/hs.app
+rm -o -s 0:/FBI.cia
+rm -o -s 0:/freeshop.cia
+rm -o -s 0:/Anemone3DS.cia
+rm -o -s 0:/Themely.cia
+rm -o -s 0:/CHMM.cia
+rm -o -s 0:/JKSM.cia
+rm -o -s 0:/dspfirm.cdc
+rm -o -s 0:/slot0x05KeyY
+rm -o -s 0:/hs.enc
+rm -o -s 0:/webkithax_tmp.bin
+rm -o -s 0:/LAUNCHER.dat
+rm -o -s 0:/hs.app
+rm -o -s 0:/menuhax_padcfg.bin
+rm -o -s 0:/Decrypt9.log
+rm -o -s 0:/otp.bin
+rm -o -s 0:/a9f.bin
+rm -o -s 0:/NAND.bin
+rm -o -s 0:/EmuNAND.bin
+rm -o -s 0:/EmuNAND9.log
+rm -o -s 0:/EmuNAND9Tool.log
+rm -o -s 0:/RX_TOOLS.log
+rm -o -s 0:/ropbinpayload_menuhax_EUR12288_old3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_EUR12288_new3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_USA12288_old3ds.bin
+rm -o -s 0:/ropbinpayload_menuhax_USA12288_new3ds.bin
+rm -o -s 0:/arm9loaderhax.3dsx
+rm -o -s 0:/EmuNAND9Tool.bin
+rm -o -s 0:/Inyectar_FBI
+rm -o -s 0:/menuhax_imagedisplay.bin
+rm -o -s 0:/less.3dsx
+rm -o -s 0:/hblauncher_loader.cia
+rm -o -s 0:/JK_Save_Manager.cia
+rm -o -s 0:/TinyFormat.cia
+rm -o -s 0:/sysUpdater.cia
+rm -o -s 0:/PlaiSysUpdater.cia
+rm -o -s 0:/BootNTRSelector.cia
+rm -o -s 0:/PlaiSys.log
+rm -o -s 0:/CIAs
+rm -o -s 0:/CIA
+rm -o -s 0:/data
+rm -o -s 0:/INSTALADOR_SYSUPDATER
+rm -o -s 0:/LEEME.text
+rm -o -s 0:/otherapp.bin
+rm -o -s 0:/boot.nds
+rm -o -s 0:/juego.app
+rm -o -s 0:/GodMode9.dat
+rm -o -s 0:/public.sav
+rm -o -s 0:/freaky.bin
+rm -o -s 0:/Instalar_Plaisysupdater
+rm -o -s 0:/update
+rm -o -s 0:/cias/Aplicaciones
+rm -o -s 0:/update
+rm -o -s 0:/ntrboot.firm
+rm -o -s 0:/emunand
+rm -o -s 0:/sh
+rm -o -s 0:/3ds/GodMode9
+rm -o -s 0:/gm9
+echo "Recomiendo correr Clean&Update despues"
+goto selector
+
+@desbrickear 
+# UNBRICKED 
+# Potente desbrickeador de cualquier 3DS por cualquier brick
+# Última Edición: 12/12/2017
+# Autor: @Ivanillofan
+
+set ERRORMSG "Abortado por el usuario."
+echo "Bienvenido a UNBRICKED!\nUn desbrickeador de Nintendo 3DS\n \nRecupera cualquier tipo de brick,\notp, pantalla azul, pantalla negra...."
+
+goto UNBRICKED
+
+@UNBRICKED
+# UNBRICKED 
+# Potente desbrickeador de cualquier 3DS por cualquier brick
+# Última Edición: 12/12/2017
+# Autor: @Ivanillofan
+
+
+set ERRORMSG "Abortado por el usuario."
+echo "Bienvenido a UNBRICKED!\nUn desbrickeador de Nintendo 3DS\n \nRecupera cualquier tipo de brick,\notp, pantalla azul, pantalla negra...."
+
+echo "$[ONTYPE] detectada"
+echo "Se va a proceder a desbrickear esta $[ONTYPE]"
+ask "Quieres continuar?"
+
+echo "[PASO 1]\nSe van a buscar los archivos necesarios en la SD."
+find 0:/UNBRICKED/ctrnand_$[ONTYPE]_$[REGION].bin CTRNAND
+find 0:/UNBRICKED/twlmbr_$[ONTYPE].bin TWLMBR
+find 0:/UNBRICKED/twln_$[ONTYPE].bin TWLN
+find 0:/UNBRICKED/twlp_$[ONTYPE].bin TWLP
+find 0:/UNBRICKED/sighax_hdr_$[ONTYPE].bin SIGHAX
+find 0:/UNBRICKED/boot9strap.firm B9S
+find 0:/UNBRICKED/sector0x96_$[ONTYPE].bin SECRET
+find 0:/UNBRICKED/hdr_$[ONTYPE].bin HDR
+
+echo "[PASO 2]\nSe van a copiar archivos en la SD,\nobligatorios para el proceso."
+cp -w -o -s -n 1:/private/movable.sed 0:/basura/movable.sed
+cp -w -o -s -n 1:/dbs/ticket.db 0:/basura/ticket.db
+cp -w -o -s -n 1:/rw/sys/SecureInfo_A 0:/basura/SecureInfo_A
+cp -w -o -s -n 1:/rw/sys/SecureInfo_B 0:/basura/SecureInfo_B
+cp -w -o -s -n 1:/rw/sys/SecureInfo_C 0:/basura/SecureInfo_C
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/00010017/00000000 0:/basura/configsave.bin
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/00010032/00000000 0:/basura/friendsave.bin
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/0001000f/00000000 0:/basura/seedsave.bin
+cp -w -o -s -n 1:/data/$[SYSID0]/sysdata/00010022/00000000 0:/basura/activitylog.bin
+
+find -o -s 1:/data/$[SYSID0]/sysdata/000202?8 MIIPLAZA
+set MIIPLAZA $[MIIPLAZA]/00000000
+cp -w -o -s -n $[MIIPLAZA] 0:/basura/miiplaza.bin
+find -o -s 1:/data/$[SYSID0]/sysdata/000202?d FACERAIDERS
+set FACERAIDERS $[FACERAIDERS]/00000000
+cp -w -o -s -n $[FACERAIDERS] 0:/basura/faceraiders.bin
+find -o -s 1:/data/$[SYSID0]/sysdata/000202?e ARGAMES
+set ARGAMES $[ARGAMES]/00000000
+cp -w -o -s -n $[ARGAMES] 0:/basura/argames.bin
+
+cp -w -o -s -n 1:/data/$[SYSID0]/extdata/00048000/f0000001 0:/basura/01 # Photos
+cp -w -o -s -n 1:/data/$[SYSID0]/extdata/00048000/f0000002 0:/basura/02 # Sounds
+cp -w -o -s -n 1:/data/$[SYSID0]/extdata/00048000/f000000b 0:/basura/0b # MiiMaker, Game Coins, etc.
+cp -w -o -s -n 1:/ro/sys/HWCAL0.dat 0:/basura/HWCAL0.dat
+cp -w -o -s -n 1:/ro/sys/HWCAL1.dat 0:/basura/HWCAL1.dat
+cp -w -o -s -n 2:/title/00030004 0:/basura/00030004
+cp -w -o -s -n 2:/shared2/0000 0:/basura/sounds.bin
+cp -w -o -s -n 3:/photo/DCIM 0:/basura/DCIM
+
+echo "[PASO 3]\nCorrigiendo archivos del sistema."
+
+cp -w -n $[HDR] S:/nand.bin
+cp -w -n $[SIGHAX] S:/nand_hdr.bin
+cp -w -n $[TWLMBR] S:/twlmbr.bin
+cp -w -n $[TWLN] S:/twln.bin
+cp -w -n $[TWLP] S:/twlp.bin
+cp -w -n $[CTRNAND] S:/ctrnand_full.bin
+
+cp -w -o -s -n 0:/basura/movable.sed 1:/private/movable.sed
+cp -w -o -s -n 0:/basura/ticket.db 1:/dbs/ticket.db
+cp -w -o -s -n 0:/basura/SecureInfo_A 1:/rw/sys/SecureInfo_A
+cp -w -o -s -n 0:/basura/SecureInfo_B 1:/rw/sys/SecureInfo_B
+cp -w -o -s -n 0:/basura/SecureInfo_C 1:/rw/sys/SecureInfo_C
+cp -w -o -s -n 0:/basura/seedsave.bin 1:/data/$[SYSID0]/sysdata/0001000f/00000000
+cp -w -o -s -n 0:/basura/configsave.bin 1:/data/$[SYSID0]/sysdata/00010017/00000000
+cp -w -o -s -n 0:/basura/friendsave.bin 1:/data/$[SYSID0]/sysdata/00010032/00000000
+cp -w -o -s -n 0:/basura/activitylog.bin 1:/data/$[SYSID0]/sysdata/00010022/00000000
+
+cp -w -o -s -n 0:/basura/miiplaza.bin 1:/data/$[SYSID0]/sysdata/00020208/00000000
+cp -w -o -s -n 0:/basura/miiplaza.bin 1:/data/$[SYSID0]/sysdata/00020218/00000000
+cp -w -o -s -n 0:/basura/miiplaza.bin 1:/data/$[SYSID0]/sysdata/00020228/00000000
+cp -w -o -s -n 0:/basura/faceraiders.bin 1:/data/$[SYSID0]/sysdata/0002020d/00000000
+cp -w -o -s -n 0:/basura/faceraiders.bin 1:/data/$[SYSID0]/sysdata/0002021d/00000000
+cp -w -o -s -n 0:/basura/faceraiders.bin 1:/data/$[SYSID0]/sysdata/0002022d/00000000
+cp -w -o -s -n 0:/basura/argames.bin 1:/data/$[SYSID0]/sysdata/0002020e/00000000
+cp -w -o -s -n 0:/basura/argames.bin 1:/data/$[SYSID0]/sysdata/0002021e/00000000
+cp -w -o -s -n 0:/basura/argames.bin 1:/data/$[SYSID0]/sysdata/0002022e/00000000
+
+
+#Restaurando EXTDATA
+cp -w -o -s -n 0:/basura/01 1:/data/$[SYSID0]/extdata/00048000/f0000001 # Photos
+cp -w -o -s -n 0:/basura/02 1:/data/$[SYSID0]/extdata/00048000/f0000002 # Sounds
+cp -w -o -s -n 0:/basura/0b 1:/data/$[SYSID0]/extdata/00048000/f000000b # MiiMaker, Game Coins, etc.
+
+# Restaurando HWCAL files
+cp -w -o -s -n 0:/basura/HWCAL0.dat 1:/ro/sys/HWCAL0.dat
+cp -w -o -s -n 0:/basura/HWCAL1.dat 1:/ro/sys/HWCAL1.dat
+
+# Restaurando TWL titles
+cp -w -o -s -n 0:/basura/00030004 2:/title/00030004
+
+# Restaurando TWL Sounds
+cp -w -o -s -n 0:/basura/sounds.bin 2:/shared2/0000
+
+# Restaurando TWLP photos
+cp -w -o -s -n 0:/basura/DCIM 3:/photo/DCIM
+
+# Corrigiendo CMACs
+fixcmac 1:/dbs
+fixcmac 1:/data
+fixcmac 1:/private
+
+#Inyectando FIRM de B9S en el FIRM0
+find 0:/3ds/3DSKIT/boot9strap.firm B9S
+cp -w -n $[B9S] S:/firm0.bin
+
+cp -w -n $[B9S] S:/firm1.bin
+
+# Arreglando el Secret Sector
+cp -w $[SECRET] S:/sector0x96.bin
+
+# Limpiando
+cp -w -o -s 0:/3ds/3DSKIT/Clean&Update/boot.firm 0:/boot.firm
+mv -w -o -s 0:/3ds/3DSKIT/Clean&Update/boot.firm 1:/boot.firm
+rm 0:/basura
+set ERRORMSG "Reboot canceled."
+
+echo "Nintendo 3DS desbrickeada."
+ask "Quieres iniciar Clean&Update para actualizar tu SD?"
+goto Clean&Update
+
+@nand
+ask "Bienvenido a NAND BACKUP/RESTORE!\nEsto hará cambios en tu NAND\n \nQuieres continuar?."
+
+goto imagen
+
+@tipo_..............................
+goto imagen
+
+@tipo______Crear_Backup_SysNAND
+echo "Has elegido crear backup"
+goto crear
+
+@tipo_..............................
+goto imagen
+
+@tipo____Restaurar_Backup_SysNAND
+echo "Has elegido restaurar backup"
+goto restaurar
+
+@tipo_..............................
+goto imagen
+
+@tipo___Pasar_EmuNAND_a_Boot9Strap
+echo "Has elegido pasar tu EmuNAND a la SysNAND"
+goto emuupdate
+
+@tipo_..............................
+goto imagen
+
+@imagen
+labelsel -o "   Selecciona que quieres hacer:" tipo_*
+
+goto 3DS
+
+
+@crear
+
+set ERRORMSG   "SysNAND backup FALLO"
+
+set SUCCESSMSG "SysNAND backup CON EXITO"
+
+
+ask "Crear backup en $[GM9OUT]?"
+
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_sysnand_???.bin OUTPATH
+
+cp -h S:/nand_minsize.bin $[OUTPATH]
+
+echo "Backup created successfully:\n$[OUTPATH]"
+
+goto 3DS
+
+@restaurar
+set SUCCESSMSG "Successfully Restored SysNAND."
+
+
+set ERRORMSG "No qualifying exploit was found.\nAborting to avoid bricking the unit."
+
+chk -u $[HAX] ""
+
+
+set ERRORMSG "No se puede restaurar con\nntrboot. Operación abortada."
+
+chk -u $[HAX] "ntrboot"
+
+
+set ERRORMSG "la SysNAND no fue modificada."
+
+filesel "Selecciona un backup." $[GM9OUT]/*nand_???.bin NANDBAK
+
+ask "Rstaurar\n$[NANDBAK]\nen la SysNAND?"
+
+allow S:/ctrnand_full.bin
+
+allow S:/twln.bin
+
+allow S:/twlp.bin
+
+
+set ERRORMSG "Backup NO VALIDO"
+
+imgmount $[NANDBAK]
+
+find I:/ctrnand_full.bin NULL
+
+find I:/twln.bin NULL
+
+find I:/twlp.bin NULL
+
+
+
+set ERRORMSG "Ocurrió un error en la transferencia.\nComprueba el peso del backup."
+
+cp -w -n I:/ctrnand_full.bin S:/ctrnand_full.bin
+
+cp -w -n I:/twln.bin S:/twln.bin
+
+cp -w -n I:/twlp.bin S:/twlp.bin
+
+imgumount
+
+goto 3DS
+
+@emuupdate
+
+
+set ERRORMSG   "EmuNAND backup fallo"
+
+set SUCCESSMSG "EmuNAND backup con exito"
+
+
+ask "Create a EmuNAND backup in $[GM9OUT]?"
+
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_emunand_???.bin EMUNAND
+
+cp -h E:/nand_minsize.bin $[EMUNAND]
+
+echo "Backup creado en:\n$[EMUNAND]"
+
+allow S:/ctrnand_full.bin
+
+allow S:/twln.bin
+
+allow S:/twlp.bin
+
+
+set ERRORMSG "Backup NO VALIDO"
+
+imgmount $[EMUNAND
+
+find I:/ctrnand_full.bin NULL
+
+find I:/twln.bin NULL
+
+find I:/twlp.bin NULL
+
+
+
+set ERRORMSG "Ocurrió un error en la transferencia.\nComprueba el peso del backup."
+
+cp -w -n I:/ctrnand_full.bin S:/ctrnand_full.bin
+
+cp -w -n I:/twln.bin S:/twln.bin
+
+cp -w -n I:/twlp.bin S:/twlp.bin
+
+imgumount
+
+goto 3DS
+
+@dumpear
+
+goto formato
+
+@extension_.....................................
+goto formato
+
+@extension__NDS_(Ejecutable_en_flashcarts)
+echo "Vas a convertirlo a .NDS"
+goto nds
+
+@extension_.....................................
+goto formato
+
+@extension__3DS_(Ejecutable_en_flashcarts)
+echo "Vas a convertirlo a .3DS"
+goto n3ds
+
+@extension_.....................................
+goto formato
+
+@extension__CIA_(Ejecutable_en_3DS_con_CFW)
+echo "Vas a convertirlo a .CIA"
+goto cia
+
+@extension_.....................................
+goto formato
+
+@formato
+labelsel -o " Selecciona a que formato convertirlo:" extension_*
+
+goto 3DS
+
+@nds
+set ERRORMSG "Fallo al dumpear cartucho NDS"
+ask "Dumpear a .NDS en $[GM9OUT]?"
+find C:/*.nds CARTPATH
+findnot $[GM9OUT]/$[DATESTAMP]_NTR_CARTDUMP_???.nds OUTPATH
+cp $[CARTPATH] $[OUTPATH]
+echo "Dumpeado correctamente a .NDS en:\n$[OUTPATH]"
+goto 3DS
+
+
+@n3ds
+set ERRORMSG "Fallo al dumpear cartucho de 3DS"
+ask "Dumpear a .3DS en $[GM9OUT]?"
+find C:/*.3ds CARTPATH
+findnot $[GM9OUT]/$[DATESTAMP]_CTR_CARTDUMP_???.3ds OUTPATH
+cp $[CARTPATH] $[OUTPATH]
+decrypt $[OUTPATH]
+echo "Dumpeado correctamente a .3DS en:\n$[OUTPATH]"
+goto 3DS
+
+@cia
+set ERRORMSG "Fallo al dumpear a .CIA"
+ask "Dumpear cartucho actual a .CIA en $[GM9OUT]?"
+find C:/*.3ds CARTPATH
+buildcia $[CARTPATH]
+echo "Dumpead correctamente a .CIA en:\n$[GM9OUT]"
+goto 3DS
+
+
+@otp
+set ERRORMSG "otp.bin dump failed"
+
+ask "Dumpear otp a $[GM9OUT]? \n(This will overwrite any existing otp.bin!)"
+set OUTPATH $[GM9OUT]/$[SERIAL]_otp.bin
+cp -w M:/otp.mem $[OUTPATH]
+echo "OTP DUMPEADO CORRECTAMENTE EN:\n$[OUTPATH]"
+goto 3DS
+
+@gm9f
+set ERRORMSG "ups"
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm0.bin OUTPATH
+cp -w -h -n S:/firm0.bin $[OUTPATH]
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm1.bin OUTPATH
+cp -w -h -n S:/firm1.bin $[OUTPATH]
+
+#Inyectando FIRM de GM9 en el FIRM0
+find 0:/3ds/3DSKIT/GodMode9.firm GM9
+cp -w -n $[GM9] S:/firm0.bin
+
+cp -w -n $[GM9] S:/firm1.bin
+goto 3ds
+
+@b9sf
+set ERRORMSG "ups"
+
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm0.bin OUTPATH
+cp -w -h -n S:/firm0.bin $[OUTPATH]
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm1.bin OUTPATH
+cp -w -h -n S:/firm1.bin $[OUTPATH]
+
+#Inyectando FIRM de B9S en el FIRM0
+find 0:/3ds/3DSKIT/boot9strap.firm B9S
+cp -w -n $[B9S] S:/firm0.bin
+
+cp -w -n $[B9S] S:/firm1.bin
+goto 3ds
+
+@fb3dsf
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm0.bin OUTPATH
+cp -w -h -n S:/firm0.bin $[OUTPATH]
+findnot $[GM9OUT]/$[DATESTAMP]_$[SERIAL]_firm1.bin OUTPATH
+cp -w -h -n S:/firm1.bin $[OUTPATH]
+
+#Inyectando FIRM de FB3DS en el FIRM0
+cp -w -n V:/fastboot3DS.firm S:/firm0.bin
+
+goto 3DS
+
+@desinstalar
+
+set SUCCESSMSG "SigHax desinstalado"
+set ERRORMSG "Algo falla"
+
+echo "$[ONTYPE] detectada!"
+
+if echo "O3DS detectada!"
+goto RT_Old_Nintendo_3DS
+
+elif echo "N3DS detectada!"
+goto RT_New_Nintendo_3DS
+
+end
+
+@RT_New_Nintendo_3DS
+check sector 0x96
+set ERRORMSG "Sector 0x96 is not genuine.\nCan't continue."
+sha S:/sector0x96.bin 82F2730D2C2DA3F30165F987FDCCAC5CBAB24B4E5F65C981CD7BE6F438E6D9D3
+
+# grab NATIVE_FIRM out of the NCCH
+set ERRORMSG "NATIVE_FIRM not found.\nIs this a N3DS?"
+find 1:/title/00040138/20000002/content/????????.app NATIVE_NCCH
+imgmount $[NATIVE_NCCH]
+verify G:/exefs/.firm
+set NATIVE_FIRM $[GM9OUT]/NATIVE_FIRM.firm
+cp G:/exefs/.firm $[NATIVE_FIRM]
+imgumount
+
+# Write NATIVE_FIRM to the FIRM partitions
+set ERRORMSG "Sighax not uninstalled.\nNo changes written to the system."
+ask "!!WARNING!!\nThis will remove sighax and\nrevert your system to stock.\n \nProceed?"
+allow S:/firm0.bin # same permission level for all firms
+cp -n $[NATIVE_FIRM] S:/firm0.bin
+cp -n $[NATIVE_FIRM] S:/firm1.bin
+
+
+@RT_Old_Nintendo_3DS
+set ERRORMSG "NATIVE_FIRM not found.\nIs this a O3DS?"
+find 1:/title/00040138/00000002/content/????????.app NATIVE_NCCH
+imgmount $[NATIVE_NCCH]
+verify G:/exefs/.firm
+set NATIVE_FIRM $[GM9OUT]/NATIVE_FIRM.firm
+cp G:/exefs/.firm $[NATIVE_FIRM]
+imgumount
+
+# Write NATIVE_FIRM to the FIRM partitions
+set ERRORMSG "Sighax not uninstalled.\nNo changes written to the system."
+ask "!!WARNING!!\nThis will remove sighax and\nrevert your system to stock.\n \nProceed?"
+allow S:/nand.bin # same permission level for all firms
+cp -n $[NATIVE_FIRM] S:/firm0.bin
+cp -n $[NATIVE_FIRM] S:/firm1.bin
+
+
+
+goto 3DS
+
+@BS_[1:]_Bloqueo_Seguridad_Gratis
+goto gratis
+
+@BS_[2:]_Bloqueo_Seguridad_DsiWare
+#Sudoku_de_EA
+if chk $[REGION] "EUR"
+set GAMEID "4b344456"
+inject 0:/3ds/3DSKIT/sudoku/sudoku_eur/sudoku_v0.app 2:/title/00030004/4b344456/content/00000000.app@00000000
+find 2:/title/00030004/4b344456/data/public.sav PUBLICEUR
+imgmount $[PUBLICEUR]
+cp -w -n 0:/3ds/3DSKIT/sudoku/sudoku_eur/savedata/savedata.bin 7:/savedata.bin
+goto desinstalar
+
+
+elif chk $[REGION] "USA"
+set GAMEID "4b344445"
+inject 0:/3ds/3DSKIT/sudoku/sudoku_usa/sudoku_v0.app 2:/title/00030004/4b344445/*.app@00000000
+find 2:/title/00030004/4b344445/data/public.sav PUBLICUSA
+imgmount $[PUBLICUSA]
+cp -w -n 0:/3ds/3DSKIT/sudoku/sudoku_usa/savedata/savedata.bin 7:/savedata.bin
+goto desinstalar
+end
+goto 3DS
+
+@oculto
+labelsel -o "Seleccione tipo de bloqueo y accesibilidad" BS_*
+
+@gratis
+goto free
+
+@free
+echo "Consiste en instalar B9S 1.3 Hidden+Luma Hidden"
+echo "Detectable si alguien conoce solo el combo"
+ask "Te interesa este modo de bloqueo?"
+goto hid
+
+goto 3DS
+
+
+goto hid
+
+@idden_....................................
+goto hid
+
+@idden_[1:]_Activar_Modo_Torneo
+
+#1_Se va a instalar una version modificada de Boot9Strap
+#Esta version solo va a leer de la CTRNAND el luma en vez de la SD
+
+cp -w -n V:/b9storneo.firm S:/firm0.bin
+cp -w -n V:/b9storneo.firm S:/firm1.bin
+
+#2_Se va a ocultar luma poniendo una version oculta en la CTRNAND
+cp -w -n V:/oculto.firm 1:/boot.firm
+
+#3_Se va a poner el script en la SD para poder restaurarlo despues todo
+#4_Habria que pulsar luego los botones A+L+Start al encender para que lea de la SD
+
+cp -w -n -h 0:/3ds/3DSKIT/ESTE.firm 0:/boot.firm
+
+#5_Tambien se va a hacer backup del registro de actividad por si las moscas
+
+cp -w -n -h 1:/data/$[SYSID0]/sysdata/00010022/00000000 1:/activitylog.bin
+
+
+goto 3DS
+
+@idden_....................................
+goto hid
+
+@idden_[2:]_Desactivar_Modo_Torneo
+
+#1_Se va a instalar la version normal de Boot9Strap que lee de la SD
+
+cp -w -n V:/b9snormal.firm S:/firm0.bin
+cp -w -n V:/b9snormal.firm S:/firm1.bin
+
+#2_Se va a poner el luma oficial en la SD
+
+cp -w -n V:/luma.firm 0:/boot.firm
+
+#3_Tambien se va a poner el luma oculto en a CTRNAND que ahi esta bien
+cp -w -n V:/oculto.firm 1:/boot.firm
+
+#4_Por ultimo se va a poner el backup del registro de actividad de antes
+cp -w -n 1:/activitylog.bin 1:/data/$[SYSID0]/sysdata/00010022/00000000
+
+
+goto 3DS
+
+@idden_....................................
+goto hid
+
+@hid
+labelsel -o "Has seleccionado Modo Torneo Pokemon\nEsto desactiva la lectura de la SD\n \nPara dejarlo todo como antes,\npulsa L+A+START mientras enciendes" idden_*
+
+goto 3DS
+
+@regionch
+echo "Esta es una $[ONTYPE]"
+if echo "Esta es una O3DS"
+goto OEUJ
+
+elif echo "Esta es una N3DS"
+goto NEUJ
+
+end
+
+
+@NREUJ_....................................
+goto NEUJ
+
+@NREUJ_Cambiar_a_N3DS_EUR
+echo "Funcion disponible proximamente"
+goto 3DS
+find 0:/UNBRICKED/ctrnand_N3DS_EUR.bin CTRNANDEURNEW
+cp -w -n $[CTRNANDEURNEW] S:/ctrnand_full.bin
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+@NREUJ_....................................
+goto NEUJ
+
+
+@NREUJ_________Cambiar_a_N3DS_USA
+echo "Funcion disponible proximamente"
+goto 3DS
+find 0:/UNBRICKED/ctrnand_N3DS_USA.bin CTRNANDUSANEW
+cp -w -n $[CTRNANDEURNEW] S:/ctrnand_full.bin
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+@NREUJ_....................................
+goto NEUJ
+
+@NREUJ_________Cambiar_a_N3DS_JPN
+echo "Funcion disponible proximamente"
+goto 3DS
+find 0:/UNBRICKED/ctrnand_O3DS_JPN.bin CTRNANDJPNNEW
+cp -w -n $[CTRNANDJPNNEW] S:/ctrnand_full.bin
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+@NREUJ_....................................
+goto NEUJ
+
+
+@NEUJ
+labelsel -o "A que region quieres cambiar esta N3DS?" NEUJ_*
+goto 3DS
+
+@OREUJ_....................................
+goto OEUJ
+
+@OREUJ_________Cambiar_a_O3DS_EUR
+echo "Funcion disponible proximamente"
+goto 3DS
+find 0:/UNBRICKED/ctrnand_O3DS_EUR.bin CTRNANDEUROLD
+cp -w -n $[CTRNANDEUROLD] S:/ctrnand_full.bin
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+@OREUJ_....................................
+goto OEUJ
+
+@OREUJ_________Cambiar_a_O3DS_USA
+echo "Funcion disponible proximamente"
+goto 3DS
+set ERRORMSG "Safe restore is not available on\nntrboot. Aborting to avoid a brick."
+
+chk -u $[HAX] "ntrboot"
+
+
+set ERRORMSG "SysNAND not changed."
+
+find 0:/UNBRICKED/ctrnand_O3DS_USA.bin NANDBAK
+
+ask "Safe restore\n$[NANDBAK]\nto SysNAND?"
+
+allow S:/ctrnand_full.bin
+
+allow S:/twln.bin
+
+allow S:/twlp.bin
+
+
+set ERRORMSG "Not a valid NAND backup."
+
+imgmount $[NANDBAK]
+
+find I:/ctrnand_full.bin NULL
+
+find I:/twln.bin NULL
+
+find I:/twlp.bin NUL
+
+
+# Uncomment the "verify" line below to enable verification
+
+# I left it out since the firm partitions are not being touched.
+
+# If you do not want the script to even try to recover content from a bricked image, enable it.
+
+verify I:/nand_minsize.bin
+
+
+set ERRORMSG "An error occurred during the transfer.\nPlease try again."
+
+cp -w -n I:/ctrnand_full.bin S:/ctrnand_full.bin
+
+cp -w -n I:/twln.bin S:/twln.bin
+
+cp -w -n I:/twlp.bin S:/twlp.bin
+
+imgumount
+
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+@OREUJ_....................................
+goto OEUJ
+
+@OREUJ_________Cambiar_a_O3DS_JPN
+echo "Funcion disponible proximamente"
+goto 3DS
+find 0:/UNBRICKED/ctrnand_O3DS_JPN.bin CTRNANDJPNOLD
+cp -w -n $[CTRNANDJPNOLD] S:/ctrnand_full.bin
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+@OREUJ_....................................
+goto OEUJ
+
+@OEUJ
+labelsel -o "A que region quieres cambiar esta O3DS?" OREUJ_*
+goto 3DS
+
+allow 1:/
+
+imgmount 1:/dbs/ticket.bak
+find T:/*o* NULL
+
+
+rm -o -s $[GM9OUT]/ctrtransfer_tickets
+
+mkdir $[GM9OUT]/ctrtransfer_tickets
+
+cp -o -s T:/eshop $[GM9OUT]/ctrtransfer_tickets/eshop
+
+cp -o -s T:/unknown $[GM9OUT]/ctrtransfer_tickets/unknown
+
+
+
+@dsiware
+#Sudoku_de_EA
+if chk $[REGION] "EUR"
+set GAMEID "4b344456"
+inject 0:/3ds/3DSKIT/sudoku/sudoku_eur/sudoku_v0.app 2:/title/00030004/4b344456/content/00000000.app@00000000
+find 2:/title/00030004/4b344456/data/public.sav PUBLICEUR
+imgmount $[PUBLICEUR]
+cp -w -n 0:/3ds/3DSKIT/sudoku/sudoku_eur/savedata/savedata.bin 7:/savedata.bin
+
+
+@INFO
+
+if chk $[ONTYPE] "O3DS"
+if chk $[ONTYPE] "N3DS"
+
+
+@O3DSFAMILY
+set PREVIEW_MODE "V:/O3DSFAMILY.pcx"
+
+@T3DS_Informacion_basica_de_mi_consola
+@T3DS_
+
+@MO3DS
+labelsel -o "Selecciona que informacion deseas conocer"  T3DS_*
+
+@N3DSFAMILY
+set PREVIEW_MODE "V:/N3DSFAMILY.pcx"
+
+@R3DS_Informacion_basica_de_mi_consola
+@R3DS_
+
+@SO3DS
+labelsel -o "Selecciona que informacion deseas conocer"  R3DS_*
+
